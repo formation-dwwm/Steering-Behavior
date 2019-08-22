@@ -9,7 +9,7 @@ window.onload = function() {
 
 	var vecReference = new Phaser.Point(0, 0);
 
-	var sprSeeker;
+	var seekers = [];
 	var sprTarget;
 
 	/**
@@ -35,8 +35,9 @@ window.onload = function() {
 		// start the Phaser arcade physics engine
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 
-		// create seeker sprite
-		sprSeeker = new ApproachingSeekerSimple(game, game.world.centerX, game.world.centerY);
+		// create seekers
+		seekers.push(new Seeker(game, game.world.centerX, game.world.centerY, 0xff7777));
+		seekers.push(new ApproachingSeekerSimple(game, game.world.centerX, game.world.centerY, 0x7777ff));
 
 		// create target sprite
 		sprTarget = game.add.sprite(game.input.x, game.input.y, 'imgTarget');
@@ -51,7 +52,9 @@ window.onload = function() {
 		sprTarget.position.setTo(game.input.x, game.input.y);
 
 		// update seeker to move toward the target
-		sprSeeker.seek(sprTarget);
+		seekers.map(seeker => {
+			seeker.seek(sprTarget);
+		});
 	}
 }
 
@@ -64,10 +67,12 @@ class Seeker extends Phaser.Sprite {
 	static MAX_SPEED_SQ = Seeker.MAX_SPEED * Seeker.MAX_SPEED;
 	static MAX_STEER_SQ = Seeker.MAX_STEER * Seeker.MAX_STEER;
 
-	constructor(game, posX, posY){
+	constructor(game, posX, posY, color = 0xffffff){
 		super(game, posX, posY, "imgSeeker");
 		
 		this.init(game);
+
+		this.tint = color;
 	}
 
 	init(game){
