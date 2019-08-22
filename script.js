@@ -38,6 +38,7 @@ window.onload = function() {
 		// create seekers
 		seekers.push(new Seeker(game, game.world.centerX, game.world.centerY, 0xff7777));
 		seekers.push(new ApproachingSeekerSimple(game, game.world.centerX, game.world.centerY, 0x7777ff));
+		seekers.push(new ApproachingSeeker(game, game.world.centerX, game.world.centerY, 0x77ff77));
 
 		// create target sprite
 		sprTarget = game.add.sprite(game.input.x, game.input.y, 'imgTarget');
@@ -147,6 +148,30 @@ class ApproachingSeekerSimple extends Seeker {
         if(vecDesired.getMagnitudeSq() > Seeker.MAX_SPEED_SQ){
             vecDesired.setMagnitude(Seeker.MAX_SPEED);
         }
+
+		return vecDesired;
+	}
+}
+
+
+class ApproachingSeeker extends Seeker {
+
+	static SLOWING_DISTANCE_THRESHOLD = 100.0;
+
+	getDesiredVelocity(pTarget){
+		var vecDesired;
+
+		// 1. vector(desired velocity) = (target position) - (vehicle position)
+		vecDesired = Phaser.Point.subtract(pTarget.position, this.position);
+
+		// 2. normalize vector(desired velocity)
+		vecDesired.normalize();
+
+		var distance = Phaser.Point.subtract(pTarget.position, this.position).getMagnitude();
+		var rampedSpeed = Seeker.MAX_SPEED * (distance / ApproachingSeeker.SLOWING_DISTANCE_THRESHOLD);
+		var clippedSpeed = Math.min(rampedSpeed, Seeker.MAX_SPEED);
+
+		vecDesired.multiply(clippedSpeed, clippedSpeed);
 
 		return vecDesired;
 	}
