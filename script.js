@@ -36,7 +36,7 @@ window.onload = function() {
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 
 		// create seeker sprite
-		sprSeeker = new Seeker(game, game.world.centerX, game.world.centerY);
+		sprSeeker = new ApproachingSeekerSimple(game, game.world.centerX, game.world.centerY);
 
 		// create target sprite
 		sprTarget = game.add.sprite(game.input.x, game.input.y, 'imgTarget');
@@ -127,5 +127,22 @@ class Seeker extends Phaser.Sprite {
 	lookAhead(){
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
 		this.rotation = Seeker.VEC_REF.angle(this.body.velocity);
+	}
+}
+
+
+class ApproachingSeekerSimple extends Seeker {
+	getDesiredVelocity(pTarget){
+		var vecDesired;
+
+		// 1. vector(desired velocity) = (target position) - (vehicle position)
+		vecDesired = Phaser.Point.subtract(pTarget.position, this.position);
+
+		// 2. limit the magnitude of vector (desired velocity) to maximum speed
+        if(vecDesired.getMagnitudeSq() > Seeker.MAX_SPEED_SQ){
+            vecDesired.setMagnitude(Seeker.MAX_SPEED);
+        }
+
+		return vecDesired;
 	}
 }
