@@ -68,25 +68,29 @@ window.onload = function() {
 		var vecDesired;
 
 		// 1. vector(desired velocity) = (target position) - (vehicle position)
-		
+		vecDesired = Phaser.Point.subtract(pTarget.position, pVehicle.position);
 
 		// 2. normalize vector(desired velocity)
-		
+		vecDesired.normalize();
 
 		// 3. scale vector(desired velocity) to maximum speed
-		
+		vecDesired.multiply(pVehicle.MAX_SPEED, pVehicle.MAX_SPEED);
 
 		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-		
+        var vecSteer = Phaser.Point.subtract(vecDesired, pVehicle.body.velocity);
 
 		// 5. limit the magnitude of vector(steering force) to maximum force
-		
+		if (vecSteer.getMagnitudeSq() > pVehicle.MAX_STEER_SQ){
+			vecSteer.setMagnitude(pVehicle.MAX_STEER);
+		}
 
 		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-		
+		pVehicle.body.velocity.add(vecSteer.x, vecSteer.y);
 
 		// 7. limit the magnitude of vector(new velocity) to maximum speed
-		
+		if (pVehicle.body.velocity.getMagnitudeSq() > pVehicle.MAX_SPEED_SQ){
+			pVehicle.body.velocity.setMagnitude(pVehicle.MAX_SPEED);
+		}
 
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
 		pVehicle.rotation = vecReference.angle(pVehicle.body.velocity);
