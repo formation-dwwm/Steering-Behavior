@@ -78,6 +78,16 @@ class Seeker extends Phaser.Sprite {
 	}
 
 	seek(pTarget){
+		var vecDesired = this.getDesiredVelocity(pTarget);
+
+		var vecSteer = this.getSteeringForce(vecDesired);
+
+		this.setNewVelocity(vecSteer);
+
+		this.lookAhead(this.body.velocity);
+	}
+
+	getDesiredVelocity(pTarget){
 		var vecDesired;
 
 		// 1. vector(desired velocity) = (target position) - (vehicle position)
@@ -89,6 +99,10 @@ class Seeker extends Phaser.Sprite {
 		// 3. scale vector(desired velocity) to maximum speed
 		vecDesired.multiply(Seeker.MAX_SPEED, Seeker.MAX_SPEED);
 
+		return vecDesired;
+	}
+
+	getSteeringForce(vecDesired){
 		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
         var vecSteer = Phaser.Point.subtract(vecDesired, this.body.velocity);
 
@@ -97,14 +111,20 @@ class Seeker extends Phaser.Sprite {
 			vecSteer.setMagnitude(Seeker.MAX_STEER);
 		}
 
+		return vecSteer;
+	}
+
+	setNewVelocity(newVelocity){
 		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-		this.body.velocity.add(vecSteer.x, vecSteer.y);
+		this.body.velocity.add(newVelocity.x, newVelocity.y);
 
 		// 7. limit the magnitude of vector (new velocity) to maximum speed
 		if (this.body.velocity.getMagnitudeSq() > Seeker.MAX_SPEED_SQ){
 			this.body.velocity.setMagnitude(Seeker.MAX_SPEED);
 		}
+	}
 
+	lookAhead(){
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
 		this.rotation = Seeker.VEC_REF.angle(this.body.velocity);
 	}
