@@ -23,7 +23,7 @@ email: matthias.gaudin@afpa.fr
 description: >- # this means to ignore newlines until "baseurl:"
   Implémentation ECMAScript des Steering Behavior (Seek and Arrival). 
   Ce projet peut être suivi comme un tutoriel en plusieurs étapes représentées par des tags git.
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/Steering-Behavior" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  formation-dwwm
 
