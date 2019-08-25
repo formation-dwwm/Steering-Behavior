@@ -26,7 +26,7 @@ En soustrayant la position du véhicule à celle de notre cible, l'on obtient un
 Si l'on normalise ce vecteur (garder son sens et direction mais ramener sa norme [longueur] à 1), nous obtenons donc la direction à suivre [2].
 Il nous reste à multiplier ce dernier vecteur normé par la vitesse maximale de notre véhicule afin d'obtenir la vitesse désirée [3].
 
-![](/img/steer_seek_fig1.png)
+![]({{ "/img/steer_seek_fig1.png" | relative_url }})
 
 > 1. **Vector** (desired velocity) = **Position** (target) – **Position** (vehicle)
 > 2. Normalize **Vector** (desired velocity)
@@ -41,7 +41,7 @@ Les changements d'orientation de notre véhicule sont modelisés par une force d
 Conceptuellement, cette force représente le changement de direction que l'on veut voir notre véhicule réaliser.
 Nous pouvons donc la calculer comme étant la différence entre la vitesse désirée et la vitesse actuelle [4], puis en limitant l'intensité de ce vecteur à la force maximale du véhicule [5].
 
-![](/img/steer_seek_fig2.png)
+![]({{ "/img/steer_seek_fig2.png" | relative_url }})
 
 > 4. **Vector** (steering force) = **Vector** (desired velocity) – **Vector** (current velocity)
 > 5. Limit the magnitude of **Vector** (steering force) to the maximum force
@@ -52,7 +52,7 @@ Connaissant notre vitesse de déplacement actuelle ainsi que la "force" à appli
 
 Celle-ci est en effet la somme de notre vitesse actuelle ainsi que de la force de changement de direction [6], limitée par la vitesse maximale de notre véhicule [7].
 
-![](/img/steer_seek_fig3.png)
+![]({{ "/img/steer_seek_fig3.png" | relative_url }})
 
 > 6. **Vector** (new velocity) = **Vector** (current velocity) + **Vector** (steering force)
 > 7. Limit the magnitude of **Vector** (new velocity) to the maximum speed

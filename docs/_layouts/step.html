@@ -30,7 +30,7 @@ layout: default
     {% if last_part != step.part and last_part != -1 %}
     <span class="separator"></span>
     {% endif %}
-    <a class="step {% if step.order < page.order %}passed{% endif %} {% if step.order == page.order %}current{% endif %}" href="{{ step.url }}">
+    <a class="step {% if step.order < page.order %}passed{% endif %} {% if step.order == page.order %}current{% endif %}" href="{{ step.url | relative_url}}">
       {% if step.order == page.order %}
         <span class="marker"></span>
       {% endif %}
@@ -50,11 +50,11 @@ layout: default
     </div>
 
     <footer class="content-footer">
-      <a class="content-nav-button" href="{{ prev_url }}">
+      <a class="content-nav-button" href="{{ prev_url | relative_url }}">
         <span class="arrow">&lt;</span>
         <span class="label">{{ prev_title }}</span>
       </a>
-      <a class="content-nav-button" href="{{ next_url }}">
+      <a class="content-nav-button" href="{{ next_url | relative_url }}">
           <span class="label">{{ next_title }}</span>
           <span class="arrow">&gt;</span>
         </a>
@@ -65,16 +65,16 @@ layout: default
   <aside class="sidebar">
     <div class="sidebar-block">
       <div class="sidebar-head">
-        <a href="{{ prev_url }}">&lt;</a>
+        <a href="{{ prev_url | relative_url }}">&lt;</a>
         <span class="sidebar-title">{{ page.part }}</span>
-        <a href="{{ next_url }}">&gt;</a>
+        <a href="{{ next_url | relative_url }}">&gt;</a>
       </div>
       <div class="sidebar-body">
           {% assign steps = site.parts | where_exp: "item","item.part == page.part" %}
           <ol class="step-list">
               {% for step in steps %}
                 <li class="{% if step.order == page.order %}selected{% endif %}">
-                  <a href="{{ step.url }}">{{ step.title }}</a>
+                  <a href="{{ step.url | relative_url }}">{{ step.title }}</a>
                 </li>
               {% endfor %}
           </ol>

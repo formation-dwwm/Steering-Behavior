@@ -16,7 +16,7 @@ Pour palier à cela, l'algorithme d'approche utilisé par Reynolds est un tout p
 Cette distance minimale peut être conceptualisée comme un cercle autour de la cible, *hors* duquel notre véhicule avance à MAX_SPEED, et *dans* lequel sa vitesse diminue linéairement avec la distance à la cible.
 
 > **Arrival Behavior**
->  ![](img/arrival.gif)
+>  ![]({{ "img/arrival.gif" | relative_url }})
 > Arrival behavior is identical to seek while the character is far from its target. But instead of moving through the target at full speed, this behavior causes the character to slow down as it approaches the target, eventually slowing to a stop coincident with the target, as shown in Figure 6. The distance at which slowing begins is a parameter of the behavior. This implementation is similar to seek: a desired velocity is determined pointing from the character towards the target. Outside the stopping radius this desired velocity is clipped to max_speed, inside the stopping radius, desired velocity is ramped down (e.g. linearly) to zero.
 > ```pseudo
 >    target_offset = target - position
