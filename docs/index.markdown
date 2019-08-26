@@ -5,7 +5,6 @@
 layout: home
 list_title: Cheminement
 ---
-# Intelligence Artificielle - Algorithmie
 
 ## Steering Behavior
 
