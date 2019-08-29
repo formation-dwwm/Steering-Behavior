@@ -28,7 +28,8 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  formation-dwwm
 
 # Build settings
-theme: formation-dwwm/minicourse
+theme: minicourse
+remote_theme: formation-dwwm/minicourse
 collections:
   parts:
     output: true
