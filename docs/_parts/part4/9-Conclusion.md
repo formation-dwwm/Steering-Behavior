@@ -1,8 +1,8 @@
 ---
 layout: step
 title:  "Expérimentez !"
-part: "Conclusion"
-order: 8
+part: "Aller plus loin"
+order: 9
 git_tip: https://github.com/formation-dwwm/Steering-Behavior/tree/step-7
 ---
 
