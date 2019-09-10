@@ -47,16 +47,16 @@ Les règles de la nouvelle simulation souhaitée sont :
         SPOILER (Aide)
     </summary>
 
-    Créer une classe Vehicule extends Seeker.
-    Créer une équipe de Vehicules.
+Créer une classe Vehicule extends Seeker.<br/>
+Créer une équipe de Vehicules.<br/>
 
-    Vous pouvez représenter les cibles par des sprites teintés (ex: vert pour la nourriture, rouge pour poison)
+Vous pouvez représenter les cibles par des sprites teintés (ex: vert pour la nourriture, rouge pour poison)<br/>
 
-    Générer une liste de la nourriture à disposer sur le plateau
-    Chaque véhicule seek la nourriture la plus proche
-    Distance < 10 => Manger (nourriture disparaît)
+Générer une liste de la nourriture à disposer sur le plateau<br/>
+Chaque véhicule seek la nourriture la plus proche<br/>
+Distance < 10 => Manger (nourriture disparaît)<br/>
 
-    A chaque update, de la nourriture peut apparaître avec une certaine probabilité
+A chaque update, de la nourriture peut apparaître avec une certaine probabilité<br/>
 
 </details>
 
