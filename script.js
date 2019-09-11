@@ -36,14 +36,16 @@ window.onload = function() {
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 
 		// create seeker sprite
-		sprSeeker = game.add.sprite(game.world.centerX, game.world.centerY, 'imgSeeker');
-		sprSeeker.anchor.setTo(0.5, 0.5);
-		game.physics.enable(sprSeeker, Phaser.Physics.ARCADE);
+		// sprSeeker = game.add.sprite(game.world.centerX, game.world.centerY, 'imgSeeker');
+		// sprSeeker.anchor.setTo(0.5, 0.5);
+		// game.physics.enable(sprSeeker, Phaser.Physics.ARCADE);
 
-		sprSeeker.MAX_SPEED = 240;
-		sprSeeker.MAX_STEER = 6;
-		sprSeeker.MAX_SPEED_SQ = sprSeeker.MAX_SPEED * sprSeeker.MAX_SPEED;
-		sprSeeker.MAX_STEER_SQ = sprSeeker.MAX_STEER * sprSeeker.MAX_STEER;
+		// sprSeeker.MAX_SPEED = 240;
+		// sprSeeker.MAX_STEER = 6;
+		// sprSeeker.MAX_SPEED_SQ = sprSeeker.MAX_SPEED * sprSeeker.MAX_SPEED;
+		// sprSeeker.MAX_STEER_SQ = sprSeeker.MAX_STEER * sprSeeker.MAX_STEER;
+
+		sprSeeker = new Seeker(game, game.world.centerX, game.world.centerY);
 
 		// create target sprite
 		sprTarget = game.add.sprite(game.input.x, game.input.y, 'imgTarget');
@@ -58,37 +60,50 @@ window.onload = function() {
 		sprTarget.position.setTo(game.input.x, game.input.y);
 
 		// update seeker to move toward the target
-		seek(sprSeeker, sprTarget);
+		// seek(sprSeeker, sprTarget);
+		sprSeeker.seek(sprTarget);
 	}
 
 	/**
 	 * Updates vehicle velocity so that it moves toward the target.
 	 */
 	function seek(pVehicle, pTarget){
+		//console.log(pVehicle);
 		var vecDesired;
 
-		// 1. vector(desired velocity) = (target position) - (vehicle position)
-		
+		// 1. vector(desired velocity) = (target position) - (vehicle position):: mouvement
+		vecDesired = Phaser.Point.subtract(pTarget.position, pVehicle.position);
 
-		// 2. normalize vector(desired velocity)
-		
+		// 2. normalize vector(desired velocity)::direction
+		vecDesired.normalize();
+		//console.log(normVector);
 
-		// 3. scale vector(desired velocity) to maximum speed
-		
+		// 3. scale vector(desired velocity) to maximum speed::vitesse désirée
+		vecDesired.multiply(pVehicle.MAX_SPEED, pVehicle.MAX_SPEED);
+		//console.log(scaVect);
 
 		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-		
+		vecSteering = Phaser.Point.subtract(vecDesired, pVehicle.body.velocity);
+		//console.log(vecSteering);
 
 		// 5. limit the magnitude of vector(steering force) to maximum force
-		
+
+		if(vecSteering.getMagnitudeSq() > pVehicle.MAX_STEER_SQ){
+			vecSteering.setMagnitude(pVehicle.MAX_STEER);
+		}
+		//console.log(vecSteering);
 
 		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
+		pVehicle.body.velocity.add(vecSteering.x, vecSteering.y);
 		
 
 		// 7. limit the magnitude of vector(new velocity) to maximum speed
-		
+		if(pVehicle.body.velocity.getMagnitudeSq() > pVehicle.MAX_SPEED_SQ){
+			vecSteering.setMagnitude(pVehicle.MAX_SPEED);
+		}
 
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
 		pVehicle.rotation = vecReference.angle(pVehicle.body.velocity);
 	}
+
 }
