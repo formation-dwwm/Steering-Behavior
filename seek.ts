@@ -1,142 +1,104 @@
+declare const Phaser;
 
-import { Phaser } from './phaser.min.js';
+export default class Seeker extends Phaser.Sprite {
 
-interface ISeeker {
-    // static VEC_REF: Phaser.Point;
-    // static MAX_SPEED: number;
-    // //...
- 
-    // constructor(game: Phaser.Game, posX: number, posY: number): ISeeker;
-    // init(game: Phaser.Game): void;
-    // seek(pTarget: Phaser.Sprite): void;
-
-    // getDesiredVelocity(pTarget: Phaser.Sprite): Phaser.Point;
-    // getSteeringForce(vecDesired: Phaser.Point): Phaser.Point;
-    // setNewVelocity(newVelocity: Phaser.Point): void;
-    // lookAhead(): void;
-
-}
-
-class Seek implements ISeeker {
-
-    width: number = 800;
-    height: number = 480;
+    centerX: number;
+    centerY: number;
+    game: any;
     sprSeeker: any;
-    sprTarget: any;
-    preload;
-    create;
-    vecReference;
+    position;
+    body;
+    rotation;
 
-    // vecDesired: any;
-    // pTarget: any;
-    // pVehicle: any;
-    // pVehicle2bis: any;
-    // tint: string;
-    // vecReference: any;
-
-    // constructor (vecDesired: any, pTarget: any, pVehicle: any, pVehicle2bis: any) {
-    constructor() {
-        // this.vecDesired = vecDesired;
-        // this.pTarget = pTarget;
-        // this.pVehicle = pVehicle;
-        // this.pVehicle2bis = pVehicle2bis;
-
-        this.game = new Phaser.Game(this.width, this.height, Phaser.AUTO, 'content', { preload: this.preload, create: this.create });
-        this.vecReference = new Phaser.Point(0, 0);
-
-        // this.tint;
-        // super(vecDesired, pTarget, pVehicle, pVehicle2bis);
-
-        // super();
-    }
-
-    game: Phaser.Game;
-
+    static vecReference = new Phaser.Point(0, 0);
+    static MAX_SPEED: number = 240;
+    static MAX_STEER: number = 6;
+    static MAX_SPEED_SQ = Seeker.MAX_SPEED * Seeker.MAX_SPEED;
+    static MAX_STEER_SQ = Seeker.MAX_STEER * Seeker.MAX_STEER;
 
     // Calcul de la vitesse désirée
     // Calcul de la vitesse de changement de direction
     // Mise à jour de la vitesse actuelle
     // Mise à jour de la rotation du véhicule
 
-    // 1. vector(desired velocity) = (target position) - (vehicle position)
-    // Vector (desired velocity) = Position (target) – Position (vehicle)
+	constructor(game, centerX, centerY){
+        super(game, centerX, centerY, "imgSeeker");
+        // this.sprSeeker = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'imgSeeker');
+        this.init(game);
+	}
 
-    // phaser = new Phaser();
-    // getvecVelocity(pTarget, pVehicle) {
-    //     this.vecDesired = Phaser.Point.subtract(pTarget.position, pVehicle.position);
-    //     return vecDesired;
-    // }
+    init(game) {
+        // game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'imgSeeker');
+        // Phaser.Game.add.existing(object: Phaser.DisplayObject)
+        game.add.existing(this);
 
-    // 2. normalize vector(desired velocity)
-    // Normalize Vector (desired velocity)
+        this.sprSeeker.anchor.setTo(0.5, 0.5);
+        game.physics.enable(this, Phaser.Physics.ARCADE);
+        
+    };
 
-    // 3. scale vector(desired velocity) to maximum speed
-    // Scale Vector (desired velocity) to the maximum speed
+    seek(pTarget) {
+        var vecDesired;
 
-    //  getDesiredVelocity(); dans class ApproachingSeekerSimple
+        // 1. vector(desired velocity) = (target position) - (vehicle position)
+        vecDesired = Phaser.Point.subtract(pTarget.position, this.position);
+        // console.log(vecDesired);
 
-    // const sprite = new Phaser.Sprite(/* ... */);
-    // sprite.tint = 0xff0000;
+        // 2. normalize vector(desired velocity)
+        vecDesired.normalize();
 
-    // target_offset = target - position
-    // distance = length (target_offset)
-    // ramped_speed = max_speed * (distance / slowing_distance)
-    // clipped_speed = minimum (ramped_speed, max_speed)
-    // desired_velocity = (clipped_speed / distance) * target_offset
-    // steering = desired_velocity - velocity
+        // 3. scale vector(desired velocity) to maximum speed
+        vecDesired.multiply(Seeker.MAX_SPEED, Seeker.MAX_SPEED);
 
+        // 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
+        var vecSteer = Phaser.Point.subtract(vecDesired, this.body.velocity);
 
-// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-// 5. limit the magnitude of vector(steering force) to maximum force
-// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-// 7. limit the magnitude of vector(new velocity) to maximum speed
-// 8. update vehicle rotation according to the angle of the vehicle velocity
+        // 5. limit the magnitude of vector(steering force) to maximum force
+        if (vecSteer.getMagnitudeSq() > Seeker.MAX_STEER_SQ){
+                vecSteer.setMagnitude(Seeker.MAX_STEER);
+        }
 
+        // 6. vector(new velocity) = vector(current velocity) + vector(steering force)
+        // newVecVelocity = vecCurrent + vecSteering;
+        this.body.velocity.add(vecSteer.x, vecSteer.y);
 
-}
+        // 7. limit the magnitude of vector(new velocity) to maximum speed
+        if (this.body.velocity.getMagnitudeSq() > Seeker.MAX_SPEED_SQ){
+            this.body.velocity.setMagnitude(Seeker.MAX_SPEED);
+        }
 
-
-class ApproachingSeekerSimple extends Phaser.Sprite {
-
-    // Vector (desired velocity) = Position (target) – Position (vehicle) 2bis. 
-    // Limit the magnitude of Vector (desired velocity) to the maximum speed
-
-    vecDesired2bis: any;
-
-    constructor () {
-        super();
+        // 8. update vehicle rotation according to the angle of the vehicle velocity
+        this.rotation = Seeker.vecReference.angle(this.body.velocity);
     }
 
-    getDesiredVelocity(pTarget, pVehicle2bis) {
-        this.vecDesired2bis = new Phaser.Point.subtract(pTarget.position, pVehicle2bis.position);
-        return this.vecDesired2bis;
-    }
-
-    // mise à jour des fonction create et update
-
-
 }
 
 
-class ApproachingSeeker extends Seek {
+// export default class ApproachingSeekerSimple extends Seeker {
 
-    // this.ApproachingSeeker.SLOWING_DISTANCE_THRESHOLD;
+//     // Vector (desired velocity) = Position (target) – Position (vehicle) 2bis. 
+//     // Limit the magnitude of Vector (desired velocity) to the maximum speed
 
-}
+//     vecDesired2bis: any;
+
+//     // constructor () {
+//     //     super();
+//     // }
+
+//     getDesiredVelocity(pTarget, this2bis) {
+//         this.vecDesired2bis = new Phaser.Point.subtract(pTarget.position, this2bis.position);
+//         return this.vecDesired2bis;
+//     }
+
+//     // mise à jour des fonction create et update
 
 
-
-window.onload = () => {
-     
-    var game = new Seek();
-
-    function preload() {
-        this.game.load.image('imgSeeker', 'assets/arrow_white_sm.png');
-		this.game.load.image('imgTarget', 'assets/circle_blue.png');
-    }
+// }
 
 
-    var getDesiredVelocity = getDesiredVelocity();
+// class ApproachingSeeker extends Seek {
 
-}
+//     // this.ApproachingSeeker.SLOWING_DISTANCE_THRESHOLD;
+
+// }
 
