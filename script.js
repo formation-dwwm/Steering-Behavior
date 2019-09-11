@@ -162,7 +162,8 @@ class ApproachingSeekerSimple extends Seeker
      * @param pTarget {Phaser.Sprite}
      * @returns {Phaser.Point}
      */
-    getDesiredVelocity(pTarget) {
+    getDesiredVelocity(pTarget)
+    {
         // vector(desired velocity) = (target position) - (vehicle position)
         let vecDesired = pTarget.position.clone().subtract(this.position.x, this.position.y);
 
@@ -170,6 +171,55 @@ class ApproachingSeekerSimple extends Seeker
         vecDesired.setMagnitude(Math.min(Seeker.MAX_SPEED, vecDesired.getMagnitude()));
 
         return vecDesired;
+    }
+}
+
+/**
+ * Seeker using a better Arrival Behavior implementation
+ */
+class ApproachingSeeker extends Seeker
+{
+    static get SLOWING_DISTANCE_THRESHOLD()
+    {
+        return 100;
+    }
+
+    /**
+     * Create a new ApproachingSeeker object
+     * @param game  The Phaser.Game instance
+     * @param posX  The x coordinate (in world space) to position the Sprite at
+     * @param posY  The y coordinate (in world space) to position the Sprite at
+     * @param tint  Optional A tint color to apply to the sprite
+     */
+    constructor(game, posX, posY, tint = 0xFFFFFF)
+    {
+        super(game, posX, posY, tint);
+    }
+
+    /**
+     * @param pTarget {Phaser.Sprite}
+     * @returns {Phaser.Point}
+     */
+    getDesiredVelocity(pTarget)
+    {
+        // Implementation of Craig W. Reynolds' algorithm
+
+        // vector(offset) = (target position) - (vehicle position)
+        let vecOffset = pTarget.position.clone().subtract(this.position.x, this.position.y);
+
+        // distance = length(vecOffset)
+        let distance = vecOffset.getMagnitude();
+
+        // ramped_speed = max_speed * (distance / slowing_distance)
+        let rampedSpeed = Seeker.MAX_SPEED * (distance / ApproachingSeeker.SLOWING_DISTANCE_THRESHOLD);
+
+        // clipped_speed = minimum (ramped_speed, max_speed)
+        let clippedSpeed = Math.min(rampedSpeed, Seeker.MAX_SPEED);
+
+        // desired_velocity = (clipped_speed / distance) * target_offset
+        let m = clippedSpeed / distance;
+
+        return vecOffset.multiply(m, m);
     }
 }
 
@@ -214,6 +264,7 @@ window.onload = function() {
         seekersCollection = [
             new Seeker(game, game.world.centerX, game.world.centerY),
             new ApproachingSeekerSimple(game, game.world.centerX, game.world.centerY, 0xFF00FF),
+            new ApproachingSeeker(game, game.world.centerX, game.world.centerY, 0xFF00)
             ];
         // create target sprite
         sprTarget = game.add.sprite(game.input.x, game.input.y, 'imgTarget');
