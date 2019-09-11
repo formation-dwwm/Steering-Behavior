@@ -54,26 +54,30 @@ window.onload = function() {
 	}
 }
 
+// Je créer une nouvelle Class Seek
+
 class Seeker extends Phaser.Sprite {
 
-	// vecReference = new Phaser.Point(0, 0);
+	// Je définie mes variables
 	MAX_SPEED = 240;
 	MAX_STEER = 6;
 	MAX_SPEED_SQ = this.MAX_SPEED * this.MAX_SPEED;
 	MAX_STEER_SQ = this.MAX_STEER * this.MAX_STEER;
 
+	//J'appelle le constructor de la class ainsi que de celle qu'on étend avec super
 	constructor(game, centX, centY){
 		super(game, centX, centY, 'imgSeeker');
-
+		//J'initialise mon jeu
 		this.init(game);
 	}
-
+	//Je définie mon jeu en lui ajoutant l'instance donc elle même
 	init(game){
 		game.add.existing(this);
 		this.anchor.setTo(0.5, 0.5);
 		game.physics.enable(this, Phaser.Physics.ARCADE);
 	}
 
+	//Voici ma méthode Seek qui définit les param de mon seeker
 	seek(sprTarget){
 		var vecReference = new Phaser.Point(0, 0);
 		var vecDesired;
