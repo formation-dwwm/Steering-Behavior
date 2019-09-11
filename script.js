@@ -48,13 +48,16 @@ class Seeker extends Phaser.Sprite
      * @param game  The Phaser.Game instance
      * @param posX  The x coordinate (in world space) to position the Sprite at
      * @param posY  The y coordinate (in world space) to position the Sprite at
+     * @param tint  Optional A tint color to apply to the sprite
      */
-    constructor(game, posX, posY)
+    constructor(game, posX, posY, tint = 0xFFFFFF)
     {
         // Create the Phaser.Sprite object
         super(game, posX, posY, 'imgSeeker');
         // Initialize our Seeker
         this.init(game);
+        // Apply the tint
+        this.tint = tint;
     }
 
     /**
@@ -138,6 +141,38 @@ class Seeker extends Phaser.Sprite
     }
 }
 
+/**
+ * Seeker using a simple Arrival Behavior implementation
+ */
+class ApproachingSeekerSimple extends Seeker
+{
+    /**
+     * Create a new ApproachingSeekerSimple object
+     * @param game  The Phaser.Game instance
+     * @param posX  The x coordinate (in world space) to position the Sprite at
+     * @param posY  The y coordinate (in world space) to position the Sprite at
+     * @param tint  Optional A tint color to apply to the sprite
+     */
+    constructor(game, posX, posY, tint = 0xFFFFFF)
+    {
+        super(game, posX, posY, tint);
+    }
+
+    /**
+     * @param pTarget {Phaser.Sprite}
+     * @returns {Phaser.Point}
+     */
+    getDesiredVelocity(pTarget) {
+        // vector(desired velocity) = (target position) - (vehicle position)
+        let vecDesired = pTarget.position.clone().subtract(this.position.x, this.position.y);
+
+        // limit the magnitude of vector(desired velocity) to maximum speed
+        vecDesired.setMagnitude(Math.min(Seeker.MAX_SPEED, vecDesired.getMagnitude()));
+
+        return vecDesired;
+    }
+}
+
 window.onload = function() {
     var width = 800,
         height = 480;
@@ -149,7 +184,7 @@ window.onload = function() {
 
     var vecReference = new Phaser.Point(0, 0);
 
-    var sprSeeker;
+    var seekersCollection;
     var sprTarget;
 
     /**
@@ -176,8 +211,10 @@ window.onload = function() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         // create seeker sprite
-        sprSeeker = new Seeker(game, game.world.centerX, game.world.centerY);
-
+        seekersCollection = [
+            new Seeker(game, game.world.centerX, game.world.centerY),
+            new ApproachingSeekerSimple(game, game.world.centerX, game.world.centerY, 0xFF00FF),
+            ];
         // create target sprite
         sprTarget = game.add.sprite(game.input.x, game.input.y, 'imgTarget');
         sprTarget.anchor.setTo(0.5, 0.5);
@@ -191,6 +228,6 @@ window.onload = function() {
         sprTarget.position.setTo(game.input.x, game.input.y);
 
         // update seeker to move toward the target
-        sprSeeker.seek(sprTarget);
+        seekersCollection.forEach(seeker => seeker.seek(sprTarget));
     }
 }
