@@ -65,28 +65,32 @@ window.onload = function() {
 	 * Updates vehicle velocity so that it moves toward the target.
 	 */
 	function seek(pVehicle, pTarget){
-		var vecDesired;
+		let vecDesired;
+		let vecSteering;
+		let vehicleVelocity = pVehicle.body.velocity;
+		const MAX_STEER = pVehicle.MAX_STEER;
+		const MAX_SPEED = pVehicle.MAX_SPEED;
 
 		// 1. vector(desired velocity) = (target position) - (vehicle position)
-		
+		vecDesired = pTarget.position.clone().subtract(pVehicle.position.x, pVehicle.position.y);
 
 		// 2. normalize vector(desired velocity)
-		
+		vecDesired.normalize();
 
 		// 3. scale vector(desired velocity) to maximum speed
-		
+		vecDesired.multiply(pVehicle.position.x, pVehicle.position.y);
 
 		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-		
+		vecSteering = vecDesired.clone().subtract(vehicleVelocity.x, vehicleVelocity.y);
 
 		// 5. limit the magnitude of vector(steering force) to maximum force
-		
+		vecSteering.setMagnitude(Math.min(MAX_STEER, vecSteering.getMagnitude()));
 
 		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-		
+		vehicleVelocity.add(vecSteering.x, vecSteering.y);
 
 		// 7. limit the magnitude of vector(new velocity) to maximum speed
-		
+		vehicleVelocity.setMagnitude(Math.min(MAX_SPEED, vehicleVelocity.getMagnitude()));
 
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
 		pVehicle.rotation = vecReference.angle(pVehicle.body.velocity);
