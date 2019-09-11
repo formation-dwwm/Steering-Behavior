@@ -25,9 +25,10 @@ window.onload = function() {
 	 */
 	function create(){
 		// set the scale mode to cover the entire screen
-		this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-		this.scale.pageAlignVertically = true;
-		this.scale.pageAlignHorizontally = true;
+
+		// this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+		// this.scale.pageAlignVertically = true;
+		// this.scale.pageAlignHorizontally = true;
 
 		// set the background color of the stage
 		game.stage.backgroundColor = "#ccc";
@@ -65,30 +66,53 @@ window.onload = function() {
 	 * Updates vehicle velocity so that it moves toward the target.
 	 */
 	function seek(pVehicle, pTarget){
+		
 		var vecDesired;
+		var pVehicle;
+		var pTarget;
+		var vecSteering;
+		var vecCurrent = pVehicle.body.velocity;
+		var forceMax = pVehicle.MAX_STEER;
+		var speedMax = pVehicle.MAX_SPEED;
+		var newVelocity;
+		var scale;
 
 		// 1. vector(desired velocity) = (target position) - (vehicle position)
 		
+		vecDesired = Phaser.Point.subtract(pTarget, pVehicle);
 
 		// 2. normalize vector(desired velocity)
 		
+		vecDesired.normalize();
 
 		// 3. scale vector(desired velocity) to maximum speed
-		
+
+		scale = vecDesired.multiply(speedMax, speedMax);
 
 		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
 		
+		vecSteering = Phaser.Point.subtract(vecDesired, vecCurrent);
 
 		// 5. limit the magnitude of vector(steering force) to maximum force
 		
+		if(vecSteering.getMagnitudeSq() > forceMax * forceMax ){
+
+			vecSteering.setMagnitude(forceMax);
+		}
 
 		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
 		
+		newVelocity = vecCurrent.add(vecSteering.x, vecSteering.y);
 
 		// 7. limit the magnitude of vector(new velocity) to maximum speed
 		
+		if(vecCurrent.getMagnitudeSq() > scale){
+
+			vecCurrent.setMagnitude(speedMax);
+		}
 
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
-		pVehicle.rotation = vecReference.angle(pVehicle.body.velocity);
+
+		pVehicle.rotation = vecReference.angle(vecCurrent);
 	}
 }
