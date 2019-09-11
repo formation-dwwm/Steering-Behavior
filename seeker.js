@@ -8,15 +8,19 @@ class Seeker extends Phaser.Sprite {
         this.anchor.setTo(0.5, 0.5); //set origin
         game.physics.enable(this, Phaser.Physics.ARCADE);
     
-        //this because we're in constructor
-        this.MAX_SPEED = 240;
-        this.MAX_STEER = 6;
-        this.MAX_SPEED_SQ = this.MAX_SPEED * this.MAX_SPEED;
-        this.MAX_STEER_SQ = this.MAX_STEER * this.MAX_STEER;
-
+        
         Seeker.init();
     }
+
+    static VEC_REF = new Phaser.Point(0, 0);
+
+    //this because we're in constructor
+    static MAX_SPEED = 240;
+    static MAX_STEER = 6;
+    static MAX_SPEED_SQ = MAX_SPEED * MAX_SPEED;
+    static MAX_STEER_SQ = MAX_STEER * MAX_STEER;
     
+
     Seeker.init(game: Phaser.Game){
         game.add.existing(this);
     }
