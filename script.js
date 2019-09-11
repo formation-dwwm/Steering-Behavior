@@ -1,9 +1,9 @@
 window.onload = function() {
-	var width = 800,
-		height = 480;
+	var height = window.innerHeight,
+		width = window.innerWidth;
 
 	var game = new Phaser.Game(
-		width, height, Phaser.CANVAS, '',
+		width, height, Phaser.WEBGL, '',
 		{preload: preload, create: create, update: update}
 	);
 
@@ -65,30 +65,38 @@ window.onload = function() {
 	 * Updates vehicle velocity so that it moves toward the target.
 	 */
 	function seek(pVehicle, pTarget){
-		var vecDesired;
-
+		let vecDesired;
+		let desired_velocity;
+		let normalize_vector;
+        let steering_force;
+        let new_velocity;
 		// 1. vector(desired velocity) = (target position) - (vehicle position)
-		
+		desired_velocity = Phaser.Point.subtract(pTarget, pVehicle);
 
 		// 2. normalize vector(desired velocity)
-		
+        normalize_vector = Phaser.Point.normalize(desired_velocity)
 
 		// 3. scale vector(desired velocity) to maximum speed
-		
+		let scale_desired = normalize_vector.multiply(pVehicle.MAX_SPEED,pVehicle.MAX_SPEED);
 
 		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-		
+        steering_force = Phaser.Point.subtract(scale_desired, pVehicle.body.velocity);
 
 		// 5. limit the magnitude of vector(steering force) to maximum force
-		
+		steering_force.setMagnitude(pVehicle.MAX_STEER)
 
 		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-		
+        new_velocity = Phaser.Point.add(pVehicle.body.velocity, steering_force)
 
 		// 7. limit the magnitude of vector(new velocity) to maximum speed
-		
+
+		if (new_velocity.getMagnitude() > pVehicle.MAX_SPEED) {
+		    new_velocity.setMagnitude(pVehicle.MAX_SPEED)
+        }
 
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
+        pVehicle.body.velocity = new_velocity;
 		pVehicle.rotation = vecReference.angle(pVehicle.body.velocity);
+
 	}
 }
