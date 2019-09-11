@@ -22,42 +22,52 @@ export default class Seeker extends Phaser.Sprite
 		game.physics.enable(this, Phaser.Physics.ARCADE);
 	}
 
-    seek(pTarget)
-    {
-		var vecDesired;
-		var steeringForce;
+	seek(pTarget)
+	{
+		this.getDesiredVelocity(pTarget);
+		this.getSteeringForce(vecDesired);
+		this.setNewVelocity();
+		this.lookAhead();
+	}
 
-		// 1. vector(desired velocity) = (target position) - (vehicle position)
+	getDesiredVelocity(pTarget)
+	{
+		var vecDesired;
+
 		vecDesired = Phaser.Point.subtract(pTarget.position, this.position);
 
-		// 2. normalize vector(desired velocity)
 		vecDesired.normalize();
 
-		// 3. scale vector(desired velocity) to maximum speed
 		vecDesired.multiply(Seeker.MAX_SPEED, Seeker.MAX_SPEED);
-		
 
-		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-		steeringForce = Phaser.Point.subtract(vecDesired, this.body.velocity);
-		
+	}
 
-		// 5. limit the magnitude of vector(steering force) to maximum force
-        if(steeringForce.getMagnitudeSq() > Seeker.MAX_STEER_SQ)
-        {
+	getSteeringForce(vecDesired)
+	{
+		var steeringForce = Phaser.Point.subtract(vecDesired, this.body.velocity);
+		
+		if(steeringForce.getMagnitudeSq() > Seeker.MAX_STEER_SQ)
+		{
 			steeringForce.setMagnitude(Seeker.MAX_STEER);
 		}
 
-		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-		this.body.velocity.add(steeringForce.x, steeringForce.y);
+	}
 
+	setNewVelocity(newVelocity)
+	{
+		var newVelocity = this.body.velocity;
+		newVelocity.add(steeringForce.x, steeringForce.y);
 
-		// 7. limit the magnitude of vector(new velocity) to maximum speed
-        if(this.body.velocity.getMagnitudeSq() > Seeker.MAX_SPEED_SQ)
-        {
+		if(this.body.velocity.getMagnitudeSq() > Seeker.MAX_SPEED_SQ)
+		{
 			this.body.velocity.setMagnitude(Seeker.MAX_SPEED);
 		}
 
-		// 8. update vehicle rotation according to the angle of the vehicle velocity
+	}
+
+	lookAhead()
+	{
 		this.rotation = Seeker.VEC_REF.angle(this.body.velocity);
 	}
+
 }
