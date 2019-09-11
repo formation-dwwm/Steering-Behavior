@@ -101,7 +101,7 @@ class Seeker extends Phaser.Sprite
         vecDesired.normalize();
 
         // scale vector(desired velocity) to maximum speed
-        vecDesired.multiply(this.position.x, this.position.y);
+        vecDesired.multiply(Seeker.MAX_SPEED, Seeker.MAX_SPEED);
 
         return vecDesired;
     }
