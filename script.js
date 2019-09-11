@@ -69,6 +69,10 @@ class Seeker extends Phaser.Sprite
         // Add our Sprite to the game
         game.add.existing(this);
         game.physics.enable(this, Phaser.Physics.ARCADE);
+
+        // Fix origin to center-right
+        this.anchor.x = 1;
+        this.anchor.y = 0.5;
     }
 
     /**
