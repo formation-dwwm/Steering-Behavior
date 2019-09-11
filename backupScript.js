@@ -1,12 +1,13 @@
 window.onload = function() {
-
 	var width = 800,
-	height = 480;
+		height = 480;
 
 	var game = new Phaser.Game(
 		width, height, Phaser.CANVAS, '',
 		{preload: preload, create: create, update: update}
 	);
+
+	var vecReference = new Phaser.Point(0, 0);
 
 	var sprSeeker;
 	var sprTarget;
@@ -35,7 +36,14 @@ window.onload = function() {
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 
 		// create seeker sprite
-		sprSeeker = new Seeker(game, game.world.centerX, game.world.centerY);
+		sprSeeker = game.add.sprite(game.world.centerX, game.world.centerY, 'imgSeeker');
+		sprSeeker.anchor.setTo(0.5, 0.5);
+		game.physics.enable(sprSeeker, Phaser.Physics.ARCADE);
+
+		sprSeeker.MAX_SPEED = 240;
+		sprSeeker.MAX_STEER = 6;
+		sprSeeker.MAX_SPEED_SQ = sprSeeker.MAX_SPEED * sprSeeker.MAX_SPEED;
+		sprSeeker.MAX_STEER_SQ = sprSeeker.MAX_STEER * sprSeeker.MAX_STEER;
 
 		// create target sprite
 		sprTarget = game.add.sprite(game.input.x, game.input.y, 'imgTarget');
@@ -50,60 +58,49 @@ window.onload = function() {
 		sprTarget.position.setTo(game.input.x, game.input.y);
 
 		// update seeker to move toward the target
-		sprSeeker.seek(sprTarget);
-	}
-}
-
-class Seeker extends Phaser.Sprite {
-
-	// vecReference = new Phaser.Point(0, 0);
-	MAX_SPEED = 240;
-	MAX_STEER = 6;
-	MAX_SPEED_SQ = this.MAX_SPEED * this.MAX_SPEED;
-	MAX_STEER_SQ = this.MAX_STEER * this.MAX_STEER;
-
-	constructor(game, centX, centY){
-		super(game, centX, centY, 'imgSeeker');
-
-		this.init(game);
+		seek(sprSeeker, sprTarget);
 	}
 
-	init(game){
-		game.add.existing(this);
-		this.anchor.setTo(0.5, 0.5);
-		game.physics.enable(this, Phaser.Physics.ARCADE);
-	}
-
-	seek(sprTarget){
-		var vecReference = new Phaser.Point(0, 0);
+		/**
+	 * Updates vehicle velocity so that it moves toward the target.
+	 */
+	function seek(pVehicle, pTarget){
 		var vecDesired;
 
 		// 1. vector(desired velocity) = (target position) - (vehicle position)
-		vecDesired = Phaser.Point.subtract(sprTarget.position, this.position);
+
+		vecDesired = Phaser.Point.subtract(pTarget.position, pVehicle.position);
 
 		// 2. normalize vector(desired velocity)
+
 		vecDesired.normalize();
 
 		// 3. scale vector(desired velocity) to maximum speed
-		vecDesired.multiply(this.MAX_SPEED, this.MAX_SPEED);
+
+		vecDesired.multiply(pVehicle.MAX_SPEED,pVehicle.MAX_SPEED);
 
 		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-		var vecStr = Phaser.Point.subtract(vecDesired, this.body.velocity);
+
+		var vecStr = Phaser.Point.subtract(vecDesired, pVehicle.body.velocity)
 
 		// 5. limit the magnitude of vector(steering force) to maximum force
-		if (vecStr.getMagnitudeSq() > this.MAX_STEER_SQ){
-			vecStr.setMagnitude(this.MAX_STEER);
-		};
+
+		if (vecStr.getMagnitudeSq() > pVehicle.MAX_STEER_SQ){
+			vecStr.setMagnitude(pVehicle.MAX_STEER);
+		}
 
 		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-		this.body.velocity.add(vecStr.x, vecStr.y);
+
+		pVehicle.body.velocity.add(vecStr.x, vecStr.y);
 
 		// 7. limit the magnitude of vector(new velocity) to maximum speed
-		if (this.body.velocity.getMagnitudeSq() > this.MAX_SPEED_SQ){
-			this.body.velocity.setMagnitude(this.MAX_SPEED);
-		};
+
+		if (pVehicle.body.velocity.getMagnitudeSq() > pVehicle.MAX_SPEED_SQ){
+			pVehicle.body.velocity.setMagnitude(pVehicle.MAX_SPEED);
+		}
 
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
-		this.rotation = vecReference.angle(this.body.velocity);
-	};
+
+		pVehicle.rotation = vecReference.angle(pVehicle.body.velocity);
+	}
 }
