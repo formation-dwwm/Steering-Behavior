@@ -67,28 +67,58 @@ window.onload = function() {
 	function seek(pVehicle, pTarget){
 		var vecDesired;
 
-		// 1. vector(desired velocity) = (target position) - (vehicle position)
-		
+    // 1. vector(desired velocity) = (target position) - (vehicle position)
+    // vecDesired = target.pos - vehicle.pos;
+    // console.log(pTarget.position);
+    // console.log(pVehicle.position);
+    vecDesired = Phaser.Point.subtract(pTarget.position, pVehicle.position);
+    // console.log(vecDesired);
 
-		// 2. normalize vector(desired velocity)
-		
+    // 2. normalize vector(desired velocity)
+    // normalize.vecDesired
+    vecDesired.normalize();
 
-		// 3. scale vector(desired velocity) to maximum speed
-		
+    // var posImg = game.add.sprite(10, 10, 'imgSeeker');
+    // create une copie du point
+    // Phaser.Point.clone()
+    // var posImg = Phaser.add(sprSeeker.position.x,sprTarget.position.x)
+    // vecDesired = Phaser.Point(200, 300);
+    // console.log(vecDesired);
 
-		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-		
 
-		// 5. limit the magnitude of vector(steering force) to maximum force
-		
+		// // 3. scale vector(desired velocity) to maximum speed
+    // scale.vecDesired;
+    var maxVecDesired = pVehicle.MAX_SPEED;
+    // console.log(maxVecDesired);
 
-		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-		
+    vecDesired.multiply(pVehicle.MAX_SPEED, pVehicle.MAX_SPEED);
 
-		// 7. limit the magnitude of vector(new velocity) to maximum speed
-		
+		// // 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
+		// vecSteering = vecDesired - vecCurrent;
+    var vecSteer = Phaser.Point.subtract(vecDesired, pVehicle.body.velocity);
+
+		// // 5. limit the magnitude of vector(steering force) to maximum force
+		// vecSteeringLimit = vecSteering + limit;
+    if (vecSteer.getMagnitudeSq() > pVehicle.MAX_STEER_SQ){
+			vecSteer.setMagnitude(pVehicle.MAX_STEER);
+		}
+
+		// // 6. vector(new velocity) = vector(current velocity) + vector(steering force)
+    // newVecVelocity = vecCurrent + vecSteering;
+    pVehicle.body.velocity.add(vecSteer.x, vecSteer.y);
+
+		// // 7. limit the magnitude of vector(new velocity) to maximum speed
+    // newVecVelocityLimit = newVecVelocity.maw(speed);
+    if (pVehicle.body.velocity.getMagnitudeSq() > pVehicle.MAX_SPEED_SQ){
+			pVehicle.body.velocity.setMagnitude(pVehicle.MAX_SPEED);
+		}
 
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
 		pVehicle.rotation = vecReference.angle(pVehicle.body.velocity);
-	}
+  }
+
+  // let seek = new Seek();
+  // let ApproachingSeekerSimple = new ApproachingSeekerSimple();
+
+
 }
