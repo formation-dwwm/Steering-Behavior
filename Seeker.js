@@ -50,14 +50,10 @@ export class Seeker extends Phaser.Sprite
      * @param posY  The y coordinate (in world space) to position the Sprite at
      * @param tint  Optional A tint color to apply to the sprite
      */
-    constructor(game, posX, posY, tint = 0xFFFFFF)
+    constructor(game, posX, posY, imgName)
     {
         // Create the Phaser.Sprite object
-        super(game, posX, posY, 'imgSeeker');
-        // Initialize our Seeker
-        this.init(game);
-        // Apply the tint
-        this.tint = tint;
+        super(game, posX, posY, imgName);
     }
 
     /**
@@ -195,9 +191,9 @@ export class ApproachingSeeker extends Seeker
      * @param posY  The y coordinate (in world space) to position the Sprite at
      * @param tint  Optional A tint color to apply to the sprite
      */
-    constructor(game, posX, posY, tint = 0xFFFFFF)
+    constructor(game, posX, posY, imgName)
     {
-        super(game, posX, posY, tint);
+        super(game, posX, posY, imgName);
     }
 
     /**
