@@ -36,14 +36,15 @@ window.onload = function() {
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 
 		// create seeker sprite
-		sprSeeker = game.add.sprite(game.world.centerX, game.world.centerY, 'imgSeeker');
-		sprSeeker.anchor.setTo(0.5, 0.5);
-		game.physics.enable(sprSeeker, Phaser.Physics.ARCADE);
+		// sprSeeker = game.add.sprite(game.world.centerX, game.world.centerY, 'imgSeeker');
+		// sprSeeker.anchor.setTo(0.5, 0.5);
+		// game.physics.enable(sprSeeker, Phaser.Physics.ARCADE);
 
-		sprSeeker.MAX_SPEED = 240;
-		sprSeeker.MAX_STEER = 6;
-		sprSeeker.MAX_SPEED_SQ = sprSeeker.MAX_SPEED * sprSeeker.MAX_SPEED;
-		sprSeeker.MAX_STEER_SQ = sprSeeker.MAX_STEER * sprSeeker.MAX_STEER;
+		// sprSeeker.MAX_SPEED = 240;
+		// sprSeeker.MAX_STEER = 6;
+		// sprSeeker.MAX_SPEED_SQ = sprSeeker.MAX_SPEED * sprSeeker.MAX_SPEED;
+    // sprSeeker.MAX_STEER_SQ = sprSeeker.MAX_STEER * sprSeeker.MAX_STEER;
+    sprSeeker = new Seeker(game, game.centerX, game.centerY);
 
 		// create target sprite
 		sprTarget = game.add.sprite(game.input.x, game.input.y, 'imgTarget');
@@ -58,7 +59,8 @@ window.onload = function() {
 		sprTarget.position.setTo(game.input.x, game.input.y);
 
 		// update seeker to move toward the target
-		seek(sprSeeker, sprTarget);
+    // seek(sprSeeker, sprTarget);
+    sprSeeker.seek(sprTarget);
 	}
 
 	/**
@@ -76,6 +78,7 @@ window.onload = function() {
 
     // 2. normalize vector(desired velocity)
     // normalize.vecDesired
+    // vecDesired.Point.normalize();
     vecDesired.normalize();
 
     // var posImg = game.add.sprite(10, 10, 'imgSeeker');
@@ -85,7 +88,6 @@ window.onload = function() {
     // vecDesired = Phaser.Point(200, 300);
     // console.log(vecDesired);
 
-
 		// // 3. scale vector(desired velocity) to maximum speed
     // scale.vecDesired;
     var maxVecDesired = pVehicle.MAX_SPEED;
@@ -93,12 +95,16 @@ window.onload = function() {
 
     vecDesired.multiply(pVehicle.MAX_SPEED, pVehicle.MAX_SPEED);
 
+
 		// // 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
 		// vecSteering = vecDesired - vecCurrent;
     var vecSteer = Phaser.Point.subtract(vecDesired, pVehicle.body.velocity);
 
 		// // 5. limit the magnitude of vector(steering force) to maximum force
 		// vecSteeringLimit = vecSteering + limit;
+    // if (vecSteer.Phaser.getMagnitudeSq() > pVehicle.MAX_STEER_SQ){
+		// 	vecSteer.Phaser.setMagnitude(pVehicle.MAX_STEER);
+    // }
     if (vecSteer.getMagnitudeSq() > pVehicle.MAX_STEER_SQ){
 			vecSteer.setMagnitude(pVehicle.MAX_STEER);
 		}
@@ -108,7 +114,7 @@ window.onload = function() {
     pVehicle.body.velocity.add(vecSteer.x, vecSteer.y);
 
 		// // 7. limit the magnitude of vector(new velocity) to maximum speed
-    // newVecVelocityLimit = newVecVelocity.maw(speed);
+    // newVecVelocityLimit = newVecVelocity.max(speed);
     if (pVehicle.body.velocity.getMagnitudeSq() > pVehicle.MAX_SPEED_SQ){
 			pVehicle.body.velocity.setMagnitude(pVehicle.MAX_SPEED);
 		}
