@@ -25,9 +25,8 @@ window.onload = function() {
 	 */
 	function create(){
 		// set the scale mode to cover the entire screen
-		this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-		this.scale.pageAlignVertically = true;
-		this.scale.pageAlignHorizontally = true;
+		
+	
 
 		// set the background color of the stage
 		game.stage.backgroundColor = "#ccc";
@@ -66,29 +65,34 @@ window.onload = function() {
 	 */
 	function seek(pVehicle, pTarget){
 		var vecDesired;
+		var vehicleVelocity = pVehicle.body.velocity;
 
 		// 1. vector(desired velocity) = (target position) - (vehicle position)
-		
-
+		var vecDesired = Phaser.Point.subtract(pTarget.position, pVehicle.position);
+		console.log(vecDesired)
 		// 2. normalize vector(desired velocity)
+		vecDesired.normalize();
 		
-
 		// 3. scale vector(desired velocity) to maximum speed
-		
+		vecDesired.multiply(pVehicle.MAX_SPEED, pVehicle.MAX_SPEED);
 
 		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-		
+		var steerForce = Phaser.Point.subtract(vecDesired, vehicleVelocity);
 
 		// 5. limit the magnitude of vector(steering force) to maximum force
-		
+		if(steerForce.getMagnitudeSq() > pVehicle.MAX_STEER_SQ){
+			steerForce.setMagnitude(pVehicle.MAX_STEER);
+		}
 
 		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-		
+		vehicleVelocity.add(steerForce.x, steerForce.y);
 
 		// 7. limit the magnitude of vector(new velocity) to maximum speed
-		
+		if(vehicleVelocity.getMagnitudeSq() > pVehicle.MAX_SPEED_SQ){
+			vehicleVelocity.setMagnitude(pVehicle.MAX_SPEED);
+		}
 
 		// 8. update vehicle rotation according to the angle of the vehicle velocity
-		pVehicle.rotation = vecReference.angle(pVehicle.body.velocity);
+		pVehicle.rotation = vecReference.angle(vehicleVelocity);
 	}
 }
