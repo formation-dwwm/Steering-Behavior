@@ -5,7 +5,7 @@ export default class Seeker extends Phaser.Sprite {
     centerX: number;
     centerY: number;
     game: any;
-    sprSeeker: any;
+    sprSeeker;
     position;
     body;
     rotation;
@@ -32,7 +32,7 @@ export default class Seeker extends Phaser.Sprite {
         // Phaser.Game.add.existing(object: Phaser.DisplayObject)
         game.add.existing(this);
 
-        this.sprSeeker.anchor.setTo(0.5, 0.5);
+        this.anchor.setTo(0.5, 0.5);
         game.physics.enable(this, Phaser.Physics.ARCADE);
         
     };
@@ -74,7 +74,7 @@ export default class Seeker extends Phaser.Sprite {
 }
 
 
-// export default class ApproachingSeekerSimple extends Seeker {
+// export class ApproachingSeekerSimple extends Seeker {
 
 //     // Vector (desired velocity) = Position (target) – Position (vehicle) 2bis. 
 //     // Limit the magnitude of Vector (desired velocity) to the maximum speed
@@ -96,7 +96,7 @@ export default class Seeker extends Phaser.Sprite {
 // }
 
 
-// class ApproachingSeeker extends Seek {
+// class ApproachingSeeker extends Seeker {
 
 //     // this.ApproachingSeeker.SLOWING_DISTANCE_THRESHOLD;
 

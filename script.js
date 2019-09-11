@@ -1,4 +1,4 @@
-import Seeker from './seeker.js';
+import Seeker from './seek.js';
 
 window.onload = function() {
   var width = 800,

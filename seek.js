@@ -1,16 +1,3 @@
-// import * as Phaser from './phaser.min.js';
-// interface ISeeker {
-//     // static VEC_REF: Phaser.Point;
-//     // static MAX_SPEED: number;
-//     // //...
-//     // constructor(game: Phaser.Game, posX: number, posY: number): ISeeker;
-//     // init(game: Phaser.Game): void;
-//     // seek(pTarget: Phaser.Sprite): void;
-//     // getDesiredVelocity(pTarget: Phaser.Sprite): Phaser.Point;
-//     // getSteeringForce(vecDesired: Phaser.Point): Phaser.Point;
-//     // setNewVelocity(newVelocity: Phaser.Point): void;
-//     // lookAhead(): void;
-// }
 export default class Seeker extends Phaser.Sprite {
     // Calcul de la vitesse désirée
     // Calcul de la vitesse de changement de direction
@@ -25,7 +12,7 @@ export default class Seeker extends Phaser.Sprite {
         // game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'imgSeeker');
         // Phaser.Game.add.existing(object: Phaser.DisplayObject)
         game.add.existing(this);
-        this.sprSeeker.anchor.setTo(0.5, 0.5);
+        this.anchor.setTo(0.5, 0.5);
         game.physics.enable(this, Phaser.Physics.ARCADE);
     }
     ;
