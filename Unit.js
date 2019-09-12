@@ -78,6 +78,8 @@ export class Unit extends ApproachingSeeker
         this.__target = target;
         this.__flags |= Flags.Busy;
         this.__target.__flags |= Flags.Busy;
+        // Little visual effect
+        this.__target.alpha = 0.5;
 
         return this;
     }
