@@ -89,8 +89,6 @@ export class Unit extends ApproachingSeeker
         {
             // Remove Sprite from game
             this.__target.destroy();
-            // Delete Food object
-            delete this.__target;
             // Reset flags
             this.__target = undefined;
             this.__flags = Flags.Idle;

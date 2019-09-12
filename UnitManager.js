@@ -31,24 +31,50 @@ export class UnitManager
 
     __update()
     {
-        // Affects idle pacman new targets
-        this.pacmanCollection
-            .filter(p => !p.IsBusy) // Keep only idle pacmans
-            .forEach(p => {
-                this.foodCollection = this.foodCollection
-                                                    .filter(f => !f.IsBusy)
-                                                    .sort((first, second) => {
-                                                        let distance1 = p.position.distance(first.position);
-                                                        let distance2 = p.position.distance(second.position);
+        let     idlePacmans = this.pacmanCollection.filter(p => !p.IsBusy);
 
-                                                        return distance1 < distance2 ? -1 : 0;
-                                                    });
+        // Compute the nearest pacman for all ghosts
+        this.foodCollection.map(ghost =>
+        {
+            // Compute all pacman's distance from this ghost
+            return idlePacmans.map(pacman =>
+            {
+                return {
+                    distance: pacman.position.distance(ghost.position),
+                    ghost: ghost,
+                    pacman: pacman
+                };
+            })
+            // Sort them from nearest to farthest
+            .sort((first, second) =>
+            {
+                return first.distance < second.distance ? -1 : 0;
+            })[0]; // Return nearest ghost to this food
+        })
+        // Sort them with nearest distances
+        .sort((first, second) =>
+        {
+            return first.distance < second.distance ? -1 : 0;
+        })
+        // Iterate through everyone of them
+        .forEach(potentialTarget =>
+        {
+            if (!potentialTarget)
+                return;
+            const { ghost, pacman } = potentialTarget;
 
-                p.setTrackTarget(this.foodCollection[0]);
-            });
+            if (!pacman.IsBusy)
+            {
+                // Affects the ghost to the pacman
+                pacman.setTrackTarget(ghost);
+            }
+        });
 
         // Do movements
         this.pacmanCollection.forEach(p => p.moveToTarget());
+
+        // Remove ghosts reference that are being processed
+        this.foodCollection = this.foodCollection.filter(f => !f.IsBusy);
 
         // Spawn ghosts randomly
         if (Math.random() * 600 < 10)
