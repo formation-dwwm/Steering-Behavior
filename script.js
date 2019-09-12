@@ -6,9 +6,6 @@ window.onload = function() {
 		width, height, Phaser.CANVAS, '',
 		{preload: preload, create: create, update: update}
 	);
-
-	var vecReference = new Phaser.Point(0, 0);
-
 	var sprSeeker;
 	var sprTarget;
 
@@ -30,24 +27,14 @@ window.onload = function() {
 		this.scale.pageAlignHorizontally = true;
 
 		// set the background color of the stage
-		game.stage.backgroundColor = "#ccc";
+		game.stage.backgroundColor = "#33FF9C";
 
 		// start the Phaser arcade physics engine
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 
 		// create seeker sprite
-		sprSeeker = game.add.sprite(game.world.centerX, game.world.centerY, 'imgSeeker');
-		sprSeeker.anchor.setTo(0.5, 0.5);
-		game.physics.enable(sprSeeker, Phaser.Physics.ARCADE);
-
-		sprSeeker.MAX_SPEED = 240;
-		sprSeeker.MAX_STEER = 6;
-		sprSeeker.MAX_SPEED_SQ = sprSeeker.MAX_SPEED * sprSeeker.MAX_SPEED;
-		sprSeeker.MAX_STEER_SQ = sprSeeker.MAX_STEER * sprSeeker.MAX_STEER;
-
-		// create target sprite
+		sprSeeker = new Seeker(game, game.world.centerX, game.world.centerY);
 		sprTarget = game.add.sprite(game.input.x, game.input.y, 'imgTarget');
-		sprTarget.anchor.setTo(0.5, 0.5);
 	}
 
 	/**
@@ -56,39 +43,8 @@ window.onload = function() {
 	function update(){
 		// update target position regarding to the current input control position
 		sprTarget.position.setTo(game.input.x, game.input.y);
-
+		
 		// update seeker to move toward the target
-		seek(sprSeeker, sprTarget);
-	}
-
-	/**
-	 * Updates vehicle velocity so that it moves toward the target.
-	 */
-	function seek(pVehicle, pTarget){
-		var vecDesired;
-
-		// 1. vector(desired velocity) = (target position) - (vehicle position)
-		
-
-		// 2. normalize vector(desired velocity)
-		
-
-		// 3. scale vector(desired velocity) to maximum speed
-		
-
-		// 4. vector(steering force) = vector(desired velocity) - vector(current velocity)
-		
-
-		// 5. limit the magnitude of vector(steering force) to maximum force
-		
-
-		// 6. vector(new velocity) = vector(current velocity) + vector(steering force)
-		
-
-		// 7. limit the magnitude of vector(new velocity) to maximum speed
-		
-
-		// 8. update vehicle rotation according to the angle of the vehicle velocity
-		pVehicle.rotation = vecReference.angle(pVehicle.body.velocity);
+		sprSeeker.seek(sprTarget);
 	}
 }
