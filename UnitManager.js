@@ -1,4 +1,4 @@
-import { Food } from "./Food.js";
+import { Ghost } from "./Ghost.js";
 import { Pacman } from "./Pacman.js";
 
 let __instance;
@@ -9,12 +9,25 @@ let __instance;
 export class UnitManager
 {
     /**
+     * {Phaser.Game}
+     */
+    __game;
+    /**
+     * {Pacman[]}
+     */
+    pacmanCollection;
+    /**
+     * {Ghost[]}
+     */
+    ghostCollection;
+
+    /**
      *
      * @param game
      * @param nbPacman
-     * @param minFood
+     * @param minGhost
      */
-    constructor(game, nbPacman, minFood)
+    constructor(game, nbPacman, minGhost)
     {
         this.__game = game;
 
@@ -23,10 +36,10 @@ export class UnitManager
         for (let i = 0; i < nbPacman; ++i)
             this.pacmanCollection.push(Pacman.Spawn(game));
 
-        // Generate food units
-        this.foodCollection = [];
-        for (let i = 0; i < minFood + Math.random() * nbPacman; ++i)
-            this.foodCollection.push(Food.Spawn(game));
+        // Generate ghost units
+        this.ghostCollection = [];
+        for (let i = 0; i < minGhost + Math.random() * nbPacman; ++i)
+            this.ghostCollection.push(Ghost.Spawn(game));
     }
 
     __update()
@@ -34,9 +47,9 @@ export class UnitManager
         let     idlePacmans = this.pacmanCollection.filter(p => !p.IsBusy);
 
         // Compute the nearest pacman for all ghosts
-        this.foodCollection.map(ghost =>
+        this.ghostCollection.map(ghost =>
         {
-            // Compute all pacman's distance from this ghost
+            // Compute all pacmans' distance from this ghost
             return idlePacmans.map(pacman =>
             {
                 return {
@@ -49,7 +62,7 @@ export class UnitManager
             .sort((first, second) =>
             {
                 return first.distance < second.distance ? -1 : 0;
-            })[0]; // Return nearest ghost to this food
+            })[0]; // Return nearest pacman to this ghost
         })
         // Sort them with nearest distances
         .sort((first, second) =>
@@ -61,6 +74,7 @@ export class UnitManager
         {
             if (!potentialTarget)
                 return;
+
             const { ghost, pacman } = potentialTarget;
 
             if (!pacman.IsBusy)
@@ -74,26 +88,26 @@ export class UnitManager
         this.pacmanCollection.forEach(p => p.moveToTarget());
 
         // Remove ghosts reference that are being processed
-        this.foodCollection = this.foodCollection.filter(f => !f.IsBusy);
+        this.ghostCollection = this.ghostCollection.filter(f => !f.IsBusy);
 
         // Spawn ghosts randomly
         if (Math.random() * 600 < 10)
             for (let i = 1; i < Math.random() * 5; ++i)
-                this.foodCollection.push(Food.Spawn(this.__game));
+                this.ghostCollection.push(Ghost.Spawn(this.__game));
     }
 
     /**
      * Use this function to initialize the UnitManager
      * @param game {Phaser.Game}
      * @param nbPacman {number}
-     * @param minFood {number}
+     * @param minGhost {number}
      */
-    static Initialize(game, nbPacman, minFood)
+    static Initialize(game, nbPacman, minGhost)
     {
         if (__instance)
             return;
 
-        __instance = new UnitManager(game, nbPacman, minFood);
+        __instance = new UnitManager(game, nbPacman, minGhost);
     }
 
     /***

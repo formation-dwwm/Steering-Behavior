@@ -1,12 +1,12 @@
 import {Unit} from "./Unit.js";
 
 /**
- * Represents a Food unit
+ * Represents a Ghost unit
  */
-export class Food extends Unit
+export class Ghost extends Unit
 {
     /**
-     * Create a new Food object
+     * Create a new Ghost object
      * @param game {Phaser.Game}
      * @param posX {number}
      * @param posY {number}

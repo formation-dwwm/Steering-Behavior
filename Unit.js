@@ -16,6 +16,15 @@ const Flags = {
 export class Unit extends ApproachingSeeker
 {
     /**
+     * {Unit}
+     */
+    __target;
+    /**
+     * {Flags}
+     */
+    __flags;
+
+    /**
      * Create a new Unit object
      * @param game {Phaser.Game}
      * @param posX {number}

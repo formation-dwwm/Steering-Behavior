@@ -2,7 +2,8 @@ import { UnitManager} from "./UnitManager.js";
 
 window.onload = function() {
     var game = new Phaser.Game(
-        "100", "100", Phaser.WEBGL, '',
+        document.body.clientWidth,
+        document.body.clientHeight, Phaser.WEBGL, '',
         {preload: preload, create: create, update: update}
     );
 
@@ -33,7 +34,7 @@ window.onload = function() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         // Init our UnitManager
-        UnitManager.Initialize(game, 5, 15);
+        UnitManager.Initialize(game, 2, 15);
     }
 
     /**
