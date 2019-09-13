@@ -8,7 +8,7 @@ window.onload = function() {
     );
 
     /**
-     *	Preload textures
+     *    Preload textures
      */
     function preload() {
         game.load.image('imgSeeker', 'assets/arrow_white_sm.png');
@@ -19,9 +19,9 @@ window.onload = function() {
     }
 
     /**
-     *	Setup the game scene
+     *    Setup the game scene
      */
-    function create(){
+    function create() {
         // set the scale mode to cover the entire screen
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.pageAlignVertically = true;
@@ -34,7 +34,7 @@ window.onload = function() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         // Init our UnitManager
-        UnitManager.Initialize(game, 3, 100);
+        UnitManager.Initialize(game, 3, 500);
     }
 
     /**

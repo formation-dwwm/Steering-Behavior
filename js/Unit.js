@@ -153,16 +153,19 @@ export class Unit extends ApproachingSeeker
         let posY;
         let world = game.world;
         let worldPadding = 20;
+        let maxTry = 20;
 
         // Randomly generate coordinates
         do
         {
             posX = worldPadding + Math.random() * (world.width - worldPadding * 2);
             posY = worldPadding + Math.random() * (world.height - worldPadding * 2);
-        } while (world.children.length && world.children
+        } while (--maxTry && world.children.length && world.children
                     .map(sprite => overlap(sprite, posX, posY))
                     .reduce((acc, isOverlap) => acc |= isOverlap));
 
+        if (!maxTry)
+            throw new Error(`Couldn't find a suitable position for a new ${this.name}`);
         // Generate sprite
         return new this(game, posX, posY);
     }
