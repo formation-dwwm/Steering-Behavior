@@ -1,13 +1,14 @@
 import {ApproachingSeeker} from "./Seeker.js";
 
 /**
- * Flags representing a Unit status
- * @type {{Done: number, Idle: number, Busy: number}}
+ * @type {{Done: number, Busy: number, FlippedH: number, FlippedV: number}}
  */
 const Flags = {
-    Idle: 0,
-    Busy: 1,
-    Done: 2,
+    Busy: 1 << 0,
+    Done: 1 << 1,
+
+    FlippedH: 1 << 16,
+    FlippedV: 1 << 17,
 };
 
 /**
@@ -51,8 +52,18 @@ export class Unit extends ApproachingSeeker
         // Move origin to center
         this.anchor.setTo(0.5, 0.5);
 
-        // Set flags to Idle
-        this.__flags = Flags.Idle;
+        // Init flags
+        this.__flags = 0;
+
+        // For debug purpose
+        this.inputEnabled = true;
+        this.events.onInputDown.add(function (unit, event)
+        {
+            console.log(event);
+            console.log(unit);
+            console.log();
+            debugger;
+        }, this);
     }
 
     /**
@@ -62,6 +73,24 @@ export class Unit extends ApproachingSeeker
     get IsBusy()
     {
         return !!(this.__flags &= Flags.Busy);
+    }
+
+    /**
+     * Returns if the unit is flipped horizontally
+     * @returns {boolean}
+     */
+    get IsFlippedH()
+    {
+        return !!(this.__flags &= Flags.FlippedH);
+    }
+
+    /**
+     * Returns if the unit is flipped vertically
+     * @returns {boolean}
+     */
+    get IsFlippedV()
+    {
+        return !!(this.__flags &= Flags.FlippedV);
     }
 
     /**
@@ -95,6 +124,11 @@ export class Unit extends ApproachingSeeker
         // Move toward the tracked target
         super.seek(this.__target);
 
+        // Ensure unit's orientation is correct
+        {
+            // TODO
+        }
+
         // Check if we overlap with the target
         if (this.overlap(this.__target))
         {
@@ -102,7 +136,7 @@ export class Unit extends ApproachingSeeker
             this.__target.destroy();
             // Reset flags
             this.__target = undefined;
-            this.__flags = Flags.Idle;
+            this.__flags &= ~Flags.Busy;
             // Reset velocity
             this.body.velocity = new Phaser.Point(0, 0);
         }
@@ -115,15 +149,60 @@ export class Unit extends ApproachingSeeker
      */
     static Spawn(game)
     {
-        // Randomly generate coordinates
-        let padding = 15;
+        let posX;
+        let posY;
         let world = game.world;
-        let posX = padding + Math.random() * (world.width - padding);
-        let posY = padding + Math.random() * (world.height - padding);
+        let worldPadding = 20;
 
-        // TODO: checks for collisions
+        // Randomly generate coordinates
+        do
+        {
+            posX = worldPadding + Math.random() * (world.width - worldPadding * 2);
+            posY = worldPadding + Math.random() * (world.height - worldPadding * 2);
+        } while (world.children.length && world.children
+                    .map(sprite => overlap(sprite, posX, posY))
+                    .reduce((acc, isOverlap) => acc |= isOverlap));
 
         // Generate sprite
         return new this(game, posX, posY);
     }
+}
+
+/**
+ * Check if a given position overlap with the specified sprite
+ * @param sprite
+ * @param posX
+ * @param posY
+ * @returns {boolean}
+ */
+function overlap(sprite, posX, posY)
+{
+    // Keep in check with assets' dimensions
+    const ASSET_WIDTH = 30;
+    const ASSET_HEIGHT = 30;
+    // Expected margin between sprites
+    const MARGIN = 10;
+
+    let paddingW = ASSET_WIDTH / 2 + MARGIN;
+    let paddingH = ASSET_HEIGHT / 2 + MARGIN;
+
+    // Sprite's bounds rectangle
+    let spriteL = sprite.position.x - (sprite.width * sprite.anchor.x);
+    let spriteT = sprite.position.y - (sprite.width * sprite.anchor.x);
+    let spriteR = spriteL + sprite.width;
+    let spriteB = spriteT + sprite.height;
+
+    // This unit's bounds rectangle (assumed)
+    let posL = posX - paddingW;
+    let posT = posY - paddingH;
+    let posR = posL + paddingW * 2;
+    let posB = posT + paddingH * 2;
+
+    // Compute intersection rectangle
+    let intersectL = Math.max(spriteL, posL);
+    let intersectT = Math.max(spriteT, posT);
+    let intersectR = Math.min(spriteR, posR);
+    let intersectB = Math.min(spriteB, posB);
+
+    return intersectL < intersectR && intersectT < intersectB;
 }

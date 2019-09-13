@@ -44,6 +44,11 @@ export class UnitManager
 
     __update()
     {
+        // Spawn ghosts randomly
+        if (Math.random() * 600 < 10)
+            for (let i = 1; i < Math.random() * 5; ++i)
+                this.ghostCollection.push(Ghost.Spawn(this.__game));
+
         let     idlePacmans = this.pacmanCollection.filter(p => !p.IsBusy);
 
         // Compute the nearest pacman for all ghosts
@@ -89,11 +94,6 @@ export class UnitManager
 
         // Remove ghosts reference that are being processed
         this.ghostCollection = this.ghostCollection.filter(f => !f.IsBusy);
-
-        // Spawn ghosts randomly
-        if (Math.random() * 600 < 10)
-            for (let i = 1; i < Math.random() * 5; ++i)
-                this.ghostCollection.push(Ghost.Spawn(this.__game));
     }
 
     /**

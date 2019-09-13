@@ -28,13 +28,13 @@ window.onload = function() {
         this.scale.pageAlignHorizontally = true;
 
         // set the background color of the stage
-        game.stage.backgroundColor = "#ccc";
+        game.stage.backgroundColor = "#000000";
 
         // start the Phaser arcade physics engine
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         // Init our UnitManager
-        UnitManager.Initialize(game, 2, 15);
+        UnitManager.Initialize(game, 3, 100);
     }
 
     /**
